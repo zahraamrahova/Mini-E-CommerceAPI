@@ -4,6 +4,7 @@ using E_CommerceAPI.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace E_CommerceAPI.Persistence.Migrations
 {
     [DbContext(typeof(E_CommerceAPIDbContext))]
-    partial class E_CommerceAPIDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221025095901_mig_3")]
+    partial class mig_3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,18 +55,6 @@ namespace E_CommerceAPI.Persistence.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Storage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -150,9 +140,6 @@ namespace E_CommerceAPI.Persistence.Migrations
             modelBuilder.Entity("E_CommerceAPI.Domain.Entities.InvoiceFile", b =>
                 {
                     b.HasBaseType("E_CommerceAPI.Domain.Entities.File");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasDiscriminator().HasValue("InvoiceFile");
                 });

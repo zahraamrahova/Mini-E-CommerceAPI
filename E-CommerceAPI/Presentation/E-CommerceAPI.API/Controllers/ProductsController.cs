@@ -1,6 +1,6 @@
-﻿using E_CommerceAPI.Application.Repositories;
+﻿using E_CommerceAPI.Application.Abstractions.Storage;
+using E_CommerceAPI.Application.Repositories;
 using E_CommerceAPI.Application.RequestParameters;
-using E_CommerceAPI.Application.Services;
 using E_CommerceAPI.Application.ViewModels.Products;
 using E_CommerceAPI.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -15,14 +15,29 @@ namespace E_CommerceAPI.API.Controllers
         readonly private IProductReadRepository _productReadRepository;
         readonly private IProductWriteRepository _productWriteRepository;
         readonly private IWebHostEnvironment _webHostEnvironment;
-        readonly private IFileService _fileService;
+        readonly private IFileReadRepository _fileReadRepository;
+        readonly private IFileWriteRepository _fileWriteRepository;
+        readonly private IProductImageFileWriteRepository _productImageFileWriteRepository;
+        readonly private IProductImageFileReadRepository _productImageFileReadRepository;
+        readonly IStorageService _storageService;
         public ProductsController(IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository, IWebHostEnvironment webHostEnvironment,
-            IFileService fileService)
+            IFileReadRepository fileReadRepository,
+            IFileWriteRepository fileWriteRepository,
+            IProductImageFileWriteRepository productImageFileWriteRepository,
+            IProductImageFileReadRepository productImageFileReadRepository,
+            IStorageService storageService
+            )
         {
             _productReadRepository = productReadRepository;
             _productWriteRepository = productWriteRepository;
             _webHostEnvironment = webHostEnvironment;
-            _fileService = fileService;
+            _fileReadRepository = fileReadRepository;
+            _fileWriteRepository = fileWriteRepository;
+            _productImageFileWriteRepository = productImageFileWriteRepository;
+            _productImageFileReadRepository = productImageFileReadRepository;
+            _storageService = storageService;
+
+
         }
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery]Pagination pagination)
@@ -80,7 +95,14 @@ namespace E_CommerceAPI.API.Controllers
         [HttpPost("[action]")]
         public async Task<IActionResult> Upload()
         {
-            await _fileService.UploadAsync("resource/product-images", Request.Form.Files);
+            var datas=await _storageService.UploadAsync("resource/file", Request.Form.Files);
+            await _productImageFileWriteRepository.AddRangeAsync(datas.Select(d => new ProductImageFile()
+            {
+                FileName = d.fileName,
+                Path = d.pathOrConatinerName,
+                Storage= _storageService.StorageName
+            }).ToList());
+            await _productImageFileWriteRepository.SaveAsync();
             return Ok();
         }
 
