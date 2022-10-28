@@ -1,4 +1,5 @@
 ﻿using E_CommerceAPI.Application.Abstractions.Storage;
+using E_CommerceAPI.Application.Abstractions.Storage.Local;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -10,37 +11,37 @@ using System.Threading.Tasks;
 
 namespace E_CommerceAPI.Infrastructure.Services.Storage.Local
 {
-    public class LocalStorage : IStorage
+    public class LocalStorage : Storage, ILocalStorage
     {
         readonly private IWebHostEnvironment _webHostEnvironment;
         public LocalStorage(IWebHostEnvironment webHostEnvironment)
         {
             _webHostEnvironment = webHostEnvironment;
         }
-        public async Task DeleteAsync(string pathOrConatinerName, string fileName)
-        => File.Delete($"{pathOrConatinerName}\\{fileName}");
+        public async Task DeleteAsync(string path, string fileName)
+        => File.Delete($"{path}\\{fileName}");
 
-        public List<string> GetFiles(string pathOrConatinerName)
+        public List<string> GetFiles(string path)
         {
-            DirectoryInfo directory = new DirectoryInfo(pathOrConatinerName);
+            DirectoryInfo directory = new DirectoryInfo(path);
             return directory.GetFiles().Select(f => f.Name).ToList();
         }
 
-        public bool HasFile(string pathOrConatinerName, string fileName)=>
-            File.Exists($"{pathOrConatinerName}\\{fileName}");
+        public bool HasFile(string path, string fileName)=>
+            File.Exists($"{path}\\{fileName}");
 
 
-        public async Task<List<(string fileName, string pathOrConatinerName)>> UploadAsync(string pathOrConatinerName, IFormFileCollection files)
+        public async Task<List<(string fileName, string pathOrContainerName)>> UploadAsync(string path, IFormFileCollection files)
         {
-            string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, pathOrConatinerName);
+            string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, path);
             if (!Directory.Exists(uploadPath))
             { Directory.CreateDirectory(uploadPath); }
             List<(string fileName, string path)> datas = new List<(string fileName, string path)>();
             foreach (IFormFile file in files)
             {
-                //string fileNewName = await FileRenameAsync(uploadPath, file.FileName);
-                await CopyFileAsync($"{uploadPath}\\{file.Name}", file);
-                datas.Add((file.Name, $"{pathOrConatinerName}\\{file.Name}"));
+                string fileNewName = await FileRenameAsync(uploadPath, file.FileName, HasFile);
+                await CopyFileAsync($"{uploadPath}\\{fileNewName}", file);
+                datas.Add((fileNewName, $"{path}\\{fileNewName}"));
             }
       
             return datas;

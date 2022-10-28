@@ -93,15 +93,31 @@ namespace E_CommerceAPI.API.Controllers
             return Ok();
         }
         [HttpPost("[action]")]
-        public async Task<IActionResult> Upload()
+        public async Task<IActionResult> Upload(string id)
         {
+            //var datas = await _storageService.UploadAsync("files", Request.Form.Files);// for Azure blob storage
             var datas=await _storageService.UploadAsync("resource/file", Request.Form.Files);
+            Product product= await _productReadRepository.GetByIdAsync(id);
             await _productImageFileWriteRepository.AddRangeAsync(datas.Select(d => new ProductImageFile()
             {
                 FileName = d.fileName,
-                Path = d.pathOrConatinerName,
-                Storage= _storageService.StorageName
+                Path = d.pathOrContainerName,
+                Storage= _storageService.StorageName,
+                Products= new List<Product>() { product }
+
             }).ToList());
+
+            //foreach(var d in datas)
+            //{
+            //    product.ProductImageFiles.Add(new()
+            //    {
+            //        FileName = d.fileName,
+            //        Path = d.pathOrContainerName,
+            //        Storage = _storageService.StorageName,
+            //        Products = new List<Product>() { product }
+
+            //    });
+            //}
             await _productImageFileWriteRepository.SaveAsync();
             return Ok();
         }
