@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace E_CommerceAPI.Application.Features.Commands.CreateProduct
+namespace E_CommerceAPI.Application.Features.Commands.Product.CreateProduct
 {
     public class CreateProductCommandResponse
     {
