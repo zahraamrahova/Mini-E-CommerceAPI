@@ -6,6 +6,6 @@ namespace E_CommerceAPI.Application.Features.Commands.ProductImageFile.UploadPro
     public class UploadProductImageCommandRequest: IRequest<UploadProductImageCommandResponse>
     {
         public string Id { get; set; }
-        public IFormFileCollection Files { get; set; }
+        public IFormFileCollection? Files { get; set; }
     }
 }

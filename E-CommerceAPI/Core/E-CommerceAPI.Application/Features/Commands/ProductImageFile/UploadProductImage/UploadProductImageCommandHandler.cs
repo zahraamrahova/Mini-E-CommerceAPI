@@ -22,7 +22,7 @@ namespace E_CommerceAPI.Application.Features.Commands.ProductImageFile.UploadPro
         {
             var datas = await _storageService.UploadAsync("resource/file", request.Files);
             P product = await _productReadRepository.GetByIdAsync(request.Id);           
-            await _productImageFileWriteRepository.AddRangeAsync(datas.Select(r => new Domain.Entities.ProductImageFile
+            await _productImageFileWriteRepository.AddRangeAsync(datas.Select(r => new PIF
             {
                 FileName = r.fileName,
                 Path = r.pathOrContainerName,

@@ -93,7 +93,7 @@ namespace E_CommerceAPI.API.Controllers
         public async Task<IActionResult> Upload([FromQuery] UploadProductImageCommandRequest uploadProductImageCommandRequest)
         {
             uploadProductImageCommandRequest.Files = Request.Form.Files;
-            UploadProductImageCommandResponse uploadProductImageCommandResponse = await _mediator.Send(uploadProductImageCommandRequest);        
+            UploadProductImageCommandResponse uploadProductImageCommandResponse = await _mediator.Send(uploadProductImageCommandRequest);
             return Ok();
         }
 
@@ -110,7 +110,7 @@ namespace E_CommerceAPI.API.Controllers
         //        Storage = _storageService.StorageName,
         //        Products = new List<Product>() { product }
 
-        //    }).ToList());        
+        //    }).ToList());
         //    await _productImageFileWriteRepository.SaveAsync();
         //    return Ok();
         //}
